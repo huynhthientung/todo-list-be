@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKERHUB_USER = credentials('dockerhub-user')  // Jenkins credential: username + password
+        DOCKERHUB_PASS = credentials('dockerhub-pass')
+    }
+
+    stages {
+
+        stage('Build') {
+            steps {
+                sh "make build"
+            }
+        }
+
+        stage('Push') {
+            steps {
+                sh "echo ${DOCKERHUB_PASS} | docker login -u ${DOCKERHUB_USER} --password-stdin"
+                sh "make push"
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh "make deploy"
+            }
+        }
+    }
+
+    post {
+        always {
+            sh "docker logout"
+        }
+    }
+}
