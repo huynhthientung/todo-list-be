@@ -20,6 +20,8 @@ env:
   dbName: "todos"
   dbSSLMode: "disable"
 
+existingSecret: "postgres-secret"
+
 resources: {}
 
 nodeSelector: {}
