@@ -1,7 +1,7 @@
 DOCKERHUB_USER ?= tuilatung2001
 APP_NAME       ?= todo-list-be
 
-DEV_VERSION    ?= 0.1.0
+DEV_VERSION    ?= 0.0.1
 PROD_VERSION   ?= 0.1.0
 
 IMAGE          ?= $(DOCKERHUB_USER)/$(APP_NAME):$(DEV_VERSION)
