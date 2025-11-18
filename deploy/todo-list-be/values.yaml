@@ -20,7 +20,7 @@ env:
   dbName: "dev_db"
   dbSSLMode: "disable"
 
-existingSecret: "postgres-secret"
+postgresSecret: "postgres-secret"
 
 resources: {}
 

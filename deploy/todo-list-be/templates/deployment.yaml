@@ -26,33 +26,8 @@ spec:
           ports:
             - containerPort: {{ .Values.containerPort }}
               name: http
-          env:
-            - name: PORT
-              value: "{{ .Values.env.port }}"
-            - name: DB_HOST
-              value: "{{ .Values.env.dbHost }}"
-            - name: DB_PORT
-              value: "{{ .Values.env.dbPort }}"
-            - name: POSTGRES_DB
-              value: "{{ .Values.env.dbName }}"
-            - name: DB_SSLMODE
-              value: "{{ .Values.env.dbSSLMode }}"
-            {{- if .Values.existingSecret }}
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.existingSecret }}
-                  key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.existingSecret }}
-                  key: POSTGRES_PASSWORD
-            {{- else }}
-            - name: POSTGRES_USER
-              value: "{{ .Values.env.dbUser }}"
-            - name: POSTGRES_PASSWORD
-              value: "{{ .Values.env.dbPassword }}"
-            {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.postgresSecret }}      # from values.yaml
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
