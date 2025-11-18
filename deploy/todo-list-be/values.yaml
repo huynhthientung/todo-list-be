@@ -5,15 +5,14 @@ image:
   tag: ""
   pullPolicy: IfNotPresent
 
-containerPort: 8080
+containerPort: 9000
 
 service:
-  type: NodePort
-  port: 8080
-  nodePort: 32080
+  type: ClusterIP
+  port: 9000
 
 env:
-  port: "8080"
+  port: "9000"
   dbHost: "todo-db"
   dbPort: "5432"
   dbUser: "postgres"
