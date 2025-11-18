@@ -15,9 +15,9 @@ env:
   port: "9000"
   dbHost: "todo-db"
   dbPort: "5432"
-  dbUser: "postgres"
-  dbPassword: "postgres"
-  dbName: "todos"
+  dbUser: "dev_user"
+  dbPassword: "dev_pass"
+  dbName: "dev_db"
   dbSSLMode: "disable"
 
 existingSecret: "postgres-secret"
