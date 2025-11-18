@@ -1,0 +1,17 @@
+# Common ignores
+.git/
+.hg/
+.svn/
+.DS_Store
+*.swp
+*.bak
+*.tmp
+*.orig
+*~
+*.lock
+
+# Node artifacts
+node_modules
+npm-debug.log
+yarn.lock
+package-lock.json

@@ -1,29 +1,32 @@
-DOCKERHUB_USER ?= toilatung2001
+DOCKERHUB_USER ?= tuilatung2001
 APP_NAME       ?= todo-list-be
-BUILD_NUMBER   ?= 0.0.1
 
-IMAGE          ?= $(DOCKERHUB_USER)/$(APP_NAME):$(BUILD_NUMBER)
-LATEST_IMAGE   ?= $(DOCKERHUB_USER)/$(APP_NAME):latest
+DEV_VERSION    ?= 0.1.0
+PROD_VERSION   ?= 0.1.0
 
-CHART_PATH     ?= helm/$(APP_NAME)
+IMAGE          ?= $(DOCKERHUB_USER)/$(APP_NAME):$(DEV_VERSION)
+PROD_IMAGE     ?= $(DOCKERHUB_USER)/$(APP_NAME):$(PROD_VERSION)
+PROD_LATEST    ?= $(DOCKERHUB_USER)/$(APP_NAME):latest
 
-.PHONY: build push deploy
+.PHONY: build test push build-prod push-prod
 
-## Build docker image
-build:
-	@echo "Building: $(IMAGE)"
+build: ## Build docker image (dev)
+	@echo "Building DEV image: $(IMAGE)"
 	docker build -t $(IMAGE) .
-	docker tag $(IMAGE) $(LATEST_IMAGE)
 
-## Push Docker Hub
-push:
-	@echo "Pushing to Docker Hub..."
+test: ## Run Go tests locally
+	go test ./...
+
+push: ## Push dev images
+	@echo "Pushing DEV image..."
 	docker push $(IMAGE)
-	docker push $(LATEST_IMAGE)
 
-## Deploy with Helm
-deploy:
-	@echo "Deploying using Helm..."
-	helm upgrade --install $(APP_NAME) $(CHART_PATH) \
-		--set image.repository=$(DOCKERHUB_USER)/$(APP_NAME) \
-		--set image.tag=$(BUILD_NUMBER) \
+build-prod: ## Build production image
+	@echo "Building PROD image: $(PROD_IMAGE)"
+	docker build -t $(PROD_IMAGE) .
+	docker tag $(PROD_IMAGE) $(PROD_LATEST)
+
+push-prod: ## Push production images
+	@echo "Pushing PROD images..."
+	docker push $(PROD_IMAGE)
+	docker push $(PROD_LATEST)

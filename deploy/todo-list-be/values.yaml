@@ -1,0 +1,30 @@
+replicaCount: 1
+
+image:
+  repository: todo-list-be
+  tag: ""
+  pullPolicy: IfNotPresent
+
+containerPort: 8080
+
+service:
+  type: NodePort
+  port: 8080
+  nodePort: 32080
+
+env:
+  port: "8080"
+  dbHost: "todo-db"
+  dbPort: "5432"
+  dbUser: "postgres"
+  dbPassword: "postgres"
+  dbName: "todos"
+  dbSSLMode: "disable"
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

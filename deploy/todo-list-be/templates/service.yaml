@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "todo-list-be.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "todo-list-be.name" . }}
+    helm.sh/chart: {{ include "todo-list-be.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if eq .Values.service.type "NodePort" }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "todo-list-be.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

@@ -2,30 +2,91 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = credentials('dockerhub-user')  // Jenkins credential: username + password
-        DOCKERHUB_PASS = credentials('dockerhub-pass')
+        DOCKERHUB = credentials('d87db04c-92b2-4ade-ab17-ceba28868239')  // Jenkins credential ID: username + password
+        APP_NAME = 'todo-list-be'
     }
 
     stages {
 
+        stage('Init') {
+            steps {
+                script {
+                    // Try Jenkins-provided GIT_BRANCH first
+                    if (env.GIT_BRANCH) {
+                        env.BRANCH_NAME = env.GIT_BRANCH.replace('origin/', '').trim()
+                    } else {
+                        // Fallback: direct Git detection (may return HEAD if detached)
+                        env.BRANCH_NAME = sh(
+                            script: "git rev-parse --abbrev-ref HEAD",
+                            returnStdout: true
+                        ).trim()
+                    }
+
+                    echo "Effective BRANCH_NAME: ${env.BRANCH_NAME}"
+                }
+            }
+        }
+
         stage('Build') {
             steps {
-                sh "make build"
+                script {
+                    if (env.BRANCH_NAME == 'main') {
+                        echo "Building PROD image"
+                        sh "make build-prod DOCKERHUB_USER=$DOCKERHUB_USR"
+                    } else {
+                        echo "Building DEV image"
+                        sh "make build DOCKERHUB_USER=$DOCKERHUB_USR"
+                    }
+                }
             }
         }
 
         stage('Push') {
             steps {
-                sh "echo ${DOCKERHUB_PASS} | docker login -u ${DOCKERHUB_USER} --password-stdin"
-                sh "make push"
+                script {
+                    sh '''
+                        echo "$DOCKERHUB_PSW" | docker login -u "$DOCKERHUB_USR" --password-stdin
+                    '''
+
+                    if (env.BRANCH_NAME == 'main') {
+                        echo "Pushing PROD image"
+                        sh "make push-prod DOCKERHUB_USER=$DOCKERHUB_USR"
+                    } else {
+                        echo "Pushing DEV image"
+                        sh "make push DOCKERHUB_USER=$DOCKERHUB_USR"
+                    }
+                }
             }
         }
 
+
         stage('Deploy') {
             steps {
-                sh "make deploy"
+                script {
+                    def namespace = "dev"
+                    echo "Deploying branch: ${env.BRANCH_NAME}"
+                    switch(env.BRANCH_NAME) {
+                        case "develop":
+                            namespace = "dev"
+                            break
+                        case "staging":
+                            namespace = "staging"
+                            break
+                        case "main":
+                            namespace = "prod"
+                            break
+                        default:
+                            namespace = "dev"
+                    }
+                    sh """
+                        helm upgrade --install ${APP_NAME} deploy/${APP_NAME} \
+                            --namespace ${namespace} \
+                            --set image.repository=${DOCKERHUB_USR}/${APP_NAME}
+                    """
+                }
             }
         }
+
     }
 
     post {

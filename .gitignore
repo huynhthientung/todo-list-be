@@ -1,0 +1,5 @@
+.DS_Store
+*.log
+.env
+todo-list-be
+coverage.out
