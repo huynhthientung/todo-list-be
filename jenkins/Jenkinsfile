@@ -83,17 +83,10 @@ pipeline {
                             --namespace ${namespace} \
                             --set image.repository=${DOCKERHUB_USR}/${APP_NAME}
                     """
+                    sh "docker logout"
                 }
             }
         }
 
-    }
-
-    post {
-        always {
-            node {
-                sh "docker logout"
-            }
-        }
     }
 }
