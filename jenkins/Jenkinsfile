@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB = credentials('d87db04c-92b2-4ade-ab17-ceba28868239')
+        DOCKERHUB = credentials('dockerhub-creds')
         APP_NAME = 'todo-list-be'
     }
 
