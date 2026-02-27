@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB = credentials('36e6ba35-479e-4122-9745-4caff71636cc')  // Jenkins credential ID: username + password
+        DOCKERHUB_USR = credentials('d87db04c-92b2-4ade-ab17-ceba28868239').username
+        DOCKERHUB_PSW = credentials('d87db04c-92b2-4ade-ab17-ceba28868239').password
         APP_NAME = 'todo-list-be'
     }
 
